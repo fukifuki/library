@@ -32,7 +32,8 @@ const libraryController = {
   addBook: function (title, author, pages, isRead) {
     let book = new Book(title, author, pages, isRead);
     library.push(book);
-    console.log(library);
+
+    libraryView.render();
   }
 }
 
@@ -59,7 +60,33 @@ const libraryView = {
       let year = this.bookYearField.value;
       libraryController.addBook(title, author, year);
     });
+
+    this.render();  
+  },
+
+  render: function () {
+    this.bookListEl.innerHTML = '';
+
+    let books = libraryController.getBooks();
+
+    // render books list
+    books.forEach((book) => {
+
+      // render a book
+      let bookEl = document.createElement('TR');
+      this.bookListEl.append(bookEl);
+
+      for (let prop in book) {
+        if (book.hasOwnProperty(prop)) {  
+          let propEl = document.createElement('TD');
+          propEl.textContent = book[prop];
+          bookEl.append(propEl);
+        }
+      }      
+
+    });
   }
+
 }
 
 
