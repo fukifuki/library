@@ -32,5 +32,35 @@ const libraryController = {
   addBook: function (title, author, pages, isRead) {
     let book = new Book(title, author, pages, isRead);
     library.push(book);
+    console.log(library);
   }
 }
+
+
+// Library view
+const libraryView = {
+
+  init: function () {
+    this.bookListEl = document.querySelector('#book-list');
+
+    this.newBookButtonEl = document.querySelector('#new-book-button');
+    this.newBookFormEl = document.querySelector('#new-book-form');
+
+    this.bookTitleField = document.querySelector('#book-title');
+    this.bookAuthorField = document.querySelector('#book-author');
+    this.bookYearField = document.querySelector('#book-year');
+
+    this.addBookButton = document.querySelector('#add-book-button');
+  
+
+    this.addBookButton.addEventListener('click', () => {
+      let title = this.bookTitleField.value;
+      let author = this.bookAuthorField.value;
+      let year = this.bookYearField.value;
+      libraryController.addBook(title, author, year);
+    });
+  }
+}
+
+
+libraryController.init();
