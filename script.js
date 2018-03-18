@@ -21,6 +21,10 @@ const library = []
 // Library controller
 const libraryController = {
 
+  init: function () {
+    libraryView.init();
+  },
+
   getBooks: function () {
     return library;
   },
