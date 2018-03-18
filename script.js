@@ -34,6 +34,12 @@ const libraryController = {
     library.push(book);
 
     libraryView.render();
+  }, 
+
+  removeBook: function (bookIndex) {
+    library.splice(bookIndex, 1);
+
+    libraryView.render();
   }
 }
 
@@ -70,7 +76,7 @@ const libraryView = {
     let books = libraryController.getBooks();
 
     // render books list
-    books.forEach((book) => {
+    books.forEach((book, index) => {
 
       // render a book
       let bookEl = document.createElement('TR');
@@ -82,8 +88,19 @@ const libraryView = {
           propEl.textContent = book[prop];
           bookEl.append(propEl);
         }
-      }      
+      }
 
+      // render a remove button 
+      let removeButtonCell = document.createElement('TD')
+      bookEl.append(removeButtonCell);
+
+      let removeButton = document.createElement('button');
+      removeButton.textContent = 'Remove';
+      removeButtonCell.append(removeButton);
+
+      removeButton.addEventListener('click', () => {
+        libraryController.removeBook(index);
+      });
     });
   }
 
