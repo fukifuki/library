@@ -23,5 +23,10 @@ const libraryController = {
 
   getBooks: function () {
     return library;
+  },
+
+  addBook: function (title, author, pages, isRead) {
+    let book = new Book(title, author, pages, isRead);
+    library.push(book);
   }
 }
