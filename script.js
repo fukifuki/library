@@ -8,47 +8,86 @@ function Book (title, author, pages, isRead=false) {
 
 }
 
-Book.prototype.info = function () {  
-  let info = this.title + ' by ' + this.author + ', ' + this.pages + ' pages';
-  return info += this.isRead ? ' (read)' : ' (not read yet)';
-}
+// Book.prototype.info = function () {  
+//   let info = this.title + ' by ' + this.author + ', ' + this.pages + ' pages';
+//   return info += this.isRead ? ' (read)' : ' (not read yet)';
+// }
 
-Book.prototype.changeReadStatus = function () {
-  this.isRead = !this.isRead;
-}
+// Book.prototype.changeReadStatus = function () {
+//   this.isRead = !this.isRead;
+// }
 
 
 // Library
-let library = [];
+// let library = [];
 
+// localStorage.setItem('library', JSON.stringify(library));
+
+const library = {
+  
+  books: null,
+
+  setBooks: function () {
+    if (localStorage.getItem('books')) {
+      this.books = JSON.parse(localStorage.getItem('books'));
+    } else {
+      this.books = [];
+      localStorage.setItem('books', JSON.stringify(this.books));
+    }
+  },
+
+  getBooks: function () {
+    this.books = JSON.parse(localStorage.getItem('books'));
+    return this.books;
+
+  },
+
+  saveBook: function (book) {
+    this.books.push(book);
+    localStorage.setItem('books', JSON.stringify(this.books));
+  },
+
+  removeBook: function (bookIndex) {
+    this.books.splice(bookIndex, 1);
+    localStorage.setItem('books', JSON.stringify(this.books));
+  },
+
+  changeReadStatus: function (bookIndex) {
+    let book = this.books[bookIndex];
+    book.isRead = !book.isRead;
+    localStorage.setItem('books', JSON.stringify(this.books));
+  }
+}
 
 
 // Library controller
 const libraryController = {
 
   init: function () {
+    library.setBooks();
+
     libraryView.init();
   },
 
   getBooks: function () {
-    return library;
+    return library.getBooks();
   },
 
   addBook: function (title, author, pages, isRead) {
     let book = new Book(title, author, pages, isRead);
-    library.push(book);
+    library.saveBook(book);
 
     libraryView.render();
   }, 
 
   removeBook: function (bookIndex) {
-    library.splice(bookIndex, 1);
+    library.removeBook(bookIndex);
 
     libraryView.render();
   },
 
   changeReadStatus: function (bookIndex) {
-    library[bookIndex].changeReadStatus();
+    library.changeReadStatus(bookIndex);
 
     libraryView.render();
   }
