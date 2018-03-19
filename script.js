@@ -13,8 +13,13 @@ Book.prototype.info = function () {
   return info += this.isRead ? ' (read)' : ' (not read yet)';
 }
 
+Book.prototype.changeReadStatus = function () {
+  this.isRead = !this.isRead;
+}
+
+
 // Library
-const library = []
+let library = [];
 
 
 
@@ -38,6 +43,12 @@ const libraryController = {
 
   removeBook: function (bookIndex) {
     library.splice(bookIndex, 1);
+
+    libraryView.render();
+  },
+
+  changeReadStatus: function (bookIndex) {
+    library[bookIndex].changeReadStatus();
 
     libraryView.render();
   }
@@ -83,12 +94,25 @@ const libraryView = {
       this.bookListEl.append(bookEl);
 
       for (let prop in book) {
-        if (book.hasOwnProperty(prop)) {  
+        if ((book.hasOwnProperty(prop)) && (prop !== 'isRead')) {  
           let propEl = document.createElement('TD');
           propEl.textContent = book[prop];
           bookEl.append(propEl);
         }
       }
+
+      // render a read/not read toggle button
+      let readToggleCell = document.createElement('TD');
+      bookEl.append(readToggleCell);
+
+      let readToggleButton = document.createElement('button');
+      readToggleButton.textContent = book.isRead ? 'Read' : 'Not read';
+
+      readToggleCell.append(readToggleButton);
+
+      readToggleButton.addEventListener('click', () => {
+        libraryController.changeReadStatus(index);
+      });
 
       // render a remove button 
       let removeButtonCell = document.createElement('TD')
