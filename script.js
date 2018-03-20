@@ -14,17 +14,6 @@ const library = {
   saveData: function (books) {
     this.storage.setItem('libraryData', JSON.stringify(books));
   }
-
-  // removeBook: function (bookIndex) {
-  //   this.books.splice(bookIndex, 1);
-  //   localStorage.setItem('books', JSON.stringify(this.books));
-  // },
-
-  // changeReadStatus: function (bookIndex) {
-  //   let book = this.books[bookIndex];
-  //   book.isRead = !book.isRead;
-  //   localStorage.setItem('books', JSON.stringify(this.books));
-  // }
 }
 
 
@@ -36,7 +25,6 @@ function Book (bookInfo) {
   this.year = bookInfo.year;
   this.pages = bookInfo.pages;
   this.isRead = bookInfo.isRead || false;
-
 }
 
 Book.prototype.info = function () {  
@@ -166,7 +154,6 @@ const libraryView = {
       });
     });
   }
-
 }
 
 
