@@ -92,17 +92,32 @@ const libraryView = {
 
     this.bookTitleField = document.querySelector('#book-title');
     this.bookAuthorField = document.querySelector('#book-author');
+    this.bookPagesField = document.querySelector('#book-pages');
     this.bookYearField = document.querySelector('#book-year');
 
     this.addBookButton = document.querySelector('#add-book-button');
-  
 
+    // hide form after the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      this.newBookFormEl.style.visibility = 'hidden';
+    });
+
+    // show form when user clicks new book button
+    this.newBookButtonEl.addEventListener('click', () => {
+      this.newBookFormEl.style.visibility = 'visible';
+    }) 
+
+    // add book to the list when user click add book button
     this.addBookButton.addEventListener('click', () => {
       libraryController.addBook({
         title: this.bookTitleField.value,
         author: this.bookAuthorField.value,
+        pages: this.bookPagesField.value,
         year: this.bookYearField.value
       });
+
+      // hide form again
+      this.newBookFormEl.style.visibility = 'hidden';
     });
 
     this.render();  
@@ -124,6 +139,7 @@ const libraryView = {
         if ((book.hasOwnProperty(prop)) && (prop !== 'isRead')) {  
           let propEl = document.createElement('TD');
           propEl.textContent = book[prop];
+          propEl.classList.add(prop);
           bookEl.append(propEl);
         }
       }
