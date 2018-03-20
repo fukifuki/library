@@ -1,93 +1,92 @@
-// Book
-function Book (title, author, pages, isRead=false) {
-
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.isRead = isRead;
-
-}
-
-// Book.prototype.info = function () {  
-//   let info = this.title + ' by ' + this.author + ', ' + this.pages + ' pages';
-//   return info += this.isRead ? ' (read)' : ' (not read yet)';
-// }
-
-// Book.prototype.changeReadStatus = function () {
-//   this.isRead = !this.isRead;
-// }
-
-
 // Library
-// let library = [];
-
-// localStorage.setItem('library', JSON.stringify(library));
-
 const library = {
   
-  books: null,
+  storage: localStorage,
 
-  setBooks: function () {
-    if (localStorage.getItem('books')) {
-      this.books = JSON.parse(localStorage.getItem('books'));
+  getData: function () {
+    if (this.storage.getItem('libraryData')) { 
+      return JSON.parse(this.storage.getItem('libraryData')); 
     } else {
-      this.books = [];
-      localStorage.setItem('books', JSON.stringify(this.books));
+      return [];
     }
   },
 
-  getBooks: function () {
-    this.books = JSON.parse(localStorage.getItem('books'));
-    return this.books;
-
-  },
-
-  saveBook: function (book) {
-    this.books.push(book);
-    localStorage.setItem('books', JSON.stringify(this.books));
-  },
-
-  removeBook: function (bookIndex) {
-    this.books.splice(bookIndex, 1);
-    localStorage.setItem('books', JSON.stringify(this.books));
-  },
-
-  changeReadStatus: function (bookIndex) {
-    let book = this.books[bookIndex];
-    book.isRead = !book.isRead;
-    localStorage.setItem('books', JSON.stringify(this.books));
+  saveData: function (books) {
+    this.storage.setItem('libraryData', JSON.stringify(books));
   }
+
+  // removeBook: function (bookIndex) {
+  //   this.books.splice(bookIndex, 1);
+  //   localStorage.setItem('books', JSON.stringify(this.books));
+  // },
+
+  // changeReadStatus: function (bookIndex) {
+  //   let book = this.books[bookIndex];
+  //   book.isRead = !book.isRead;
+  //   localStorage.setItem('books', JSON.stringify(this.books));
+  // }
 }
+
+
+// Book
+function Book (bookInfo) {
+
+  this.title = bookInfo.title;
+  this.author = bookInfo.author;
+  this.year = bookInfo.year;
+  this.pages = bookInfo.pages;
+  this.isRead = bookInfo.isRead || false;
+
+}
+
+Book.prototype.info = function () {  
+  let info = this.title + ' by ' + this.author + ', ' + this.pages + ' pages';
+  return info += this.isRead ? ' (read)' : ' (not read yet)';
+}
+
+Book.prototype.changeReadStatus = function () {
+  this.isRead = !this.isRead;
+}
+
 
 
 // Library controller
 const libraryController = {
 
+  books: [],
+
   init: function () {
-    library.setBooks();
+    library.getData().forEach((bookInfo) => {
+      let book = new Book(bookInfo);
+      this.books.push(book);  
+    });
 
     libraryView.init();
   },
 
   getBooks: function () {
-    return library.getBooks();
+    return this.books;
   },
 
-  addBook: function (title, author, pages, isRead) {
-    let book = new Book(title, author, pages, isRead);
-    library.saveBook(book);
+  addBook: function (bookInfo) {
+    let book = new Book(bookInfo);
+    this.books.push(book);
+    library.saveData(this.books);
 
     libraryView.render();
   }, 
 
   removeBook: function (bookIndex) {
-    library.removeBook(bookIndex);
+    this.books.splice(bookIndex, 1);
+    library.saveData(this.books);
+
 
     libraryView.render();
   },
 
   changeReadStatus: function (bookIndex) {
-    library.changeReadStatus(bookIndex);
+    this.books[bookIndex].changeReadStatus();
+    library.saveData(this.books);
 
     libraryView.render();
   }
@@ -111,10 +110,11 @@ const libraryView = {
   
 
     this.addBookButton.addEventListener('click', () => {
-      let title = this.bookTitleField.value;
-      let author = this.bookAuthorField.value;
-      let year = this.bookYearField.value;
-      libraryController.addBook(title, author, year);
+      libraryController.addBook({
+        title: this.bookTitleField.value,
+        author: this.bookAuthorField.value,
+        year: this.bookYearField.value
+      });
     });
 
     this.render();  
