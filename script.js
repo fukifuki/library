@@ -22,8 +22,8 @@ function Book (bookInfo) {
 
   this.title = bookInfo.title;
   this.author = bookInfo.author;
-  this.year = bookInfo.year;
   this.pages = bookInfo.pages;
+  this.year = bookInfo.year;
   this.isRead = bookInfo.isRead || false;
 }
 
@@ -88,6 +88,8 @@ const libraryView = {
     this.bookListEl = document.querySelector('#book-list');
 
     this.newBookButtonEl = document.querySelector('#new-book-button');
+
+    this.formContainerEl = document.querySelector('#form-container')
     this.newBookFormEl = document.querySelector('#new-book-form');
 
     this.bookTitleField = document.querySelector('#book-title');
@@ -96,15 +98,17 @@ const libraryView = {
     this.bookYearField = document.querySelector('#book-year');
 
     this.addBookButton = document.querySelector('#add-book-button');
+    this.exitFormButton = document.querySelector('#exit-form-button');
 
     // hide form after the page loads
     document.addEventListener('DOMContentLoaded', () => {
-      this.newBookFormEl.style.visibility = 'hidden';
+      this.formContainerEl.style.visibility = 'hidden';
     });
 
     // show form when user clicks new book button
     this.newBookButtonEl.addEventListener('click', () => {
-      this.newBookFormEl.style.visibility = 'visible';
+      this.formContainerEl.style.visibility = 'visible';
+      this.newBookButtonEl.style.visibility = 'hidden';
     }) 
 
     // add book to the list when user click add book button
@@ -116,8 +120,21 @@ const libraryView = {
         year: this.bookYearField.value
       });
 
+      // clear input fields
+      [this.bookTitleField, this.bookAuthorField, 
+        this.bookPagesField, this.bookYearField].forEach((el) => {
+          el.value = '';
+        });
+
+
       // hide form again
-      this.newBookFormEl.style.visibility = 'hidden';
+      this.formContainerEl.style.visibility = 'hidden';
+      this.newBookButtonEl.style.visibility = 'visible';
+    });
+
+    this.exitFormButton.addEventListener('click', () => {
+      this.formContainerEl.style.visibility = 'hidden';
+      this.newBookButtonEl.style.visibility = 'visible';
     });
 
     this.render();  
@@ -126,15 +143,30 @@ const libraryView = {
   render: function () {
     this.bookListEl.innerHTML = '';
 
-    let books = libraryController.getBooks();
+    let books = libraryController.getBooks(); 
 
     // render books list
     books.forEach((book, index) => {
 
-      // render a book
+      // render a book row
       let bookEl = document.createElement('TR');
       this.bookListEl.append(bookEl);
 
+      // render a remove button 
+      let removeButtonCell = document.createElement('TD')
+      bookEl.append(removeButtonCell);
+
+      let removeButton = document.createElement('button');
+      removeButton.textContent = '\xD7';
+      removeButton.classList.add('book-button')
+      removeButton.classList.add('remove-button');
+      removeButtonCell.append(removeButton);
+
+      removeButton.addEventListener('click', () => {
+        libraryController.removeBook(index);
+      });
+
+      // add book info columns
       for (let prop in book) {
         if ((book.hasOwnProperty(prop)) && (prop !== 'isRead')) {  
           let propEl = document.createElement('TD');
@@ -149,7 +181,11 @@ const libraryView = {
       bookEl.append(readToggleCell);
 
       let readToggleButton = document.createElement('button');
-      readToggleButton.textContent = book.isRead ? 'Read' : 'Not read';
+      readToggleButton.textContent = book.isRead ?  '\u2713' : '';
+      readToggleButton.classList.add('book-button');
+      if (book.isRead) { 
+        readToggleButton.classList.add('read-toggle-button-clicked');
+      } 
 
       readToggleCell.append(readToggleButton);
 
@@ -157,17 +193,6 @@ const libraryView = {
         libraryController.changeReadStatus(index);
       });
 
-      // render a remove button 
-      let removeButtonCell = document.createElement('TD')
-      bookEl.append(removeButtonCell);
-
-      let removeButton = document.createElement('button');
-      removeButton.textContent = 'Remove';
-      removeButtonCell.append(removeButton);
-
-      removeButton.addEventListener('click', () => {
-        libraryController.removeBook(index);
-      });
     });
   }
 }
